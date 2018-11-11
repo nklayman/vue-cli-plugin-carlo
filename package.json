@@ -1,0 +1,18 @@
+{
+  "name": "vue-cli-plugin-carlo",
+  "version": "0.1.0",
+  "description": "A Vue CLI 3 Plugin for Carlo.",
+  "main": "index.js",
+  "repository": "https://github.com/nklayman/vue-cli-plugin-carlo",
+  "author": "Noah Klayman <noahklayman@gmail.com>",
+  "license": "MIT",
+  "private": false,
+  "devDependencies": {
+    "eslint": "^5.9.0",
+    "eslint-config-standard": "^12.0.0",
+    "eslint-plugin-import": "^2.14.0",
+    "eslint-plugin-node": "^8.0.0",
+    "eslint-plugin-promise": "^4.0.1",
+    "eslint-plugin-standard": "^4.0.0"
+  }
+}
