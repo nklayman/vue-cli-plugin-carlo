@@ -3,9 +3,9 @@ const isDevelopment = process.env.NODE_ENV !== 'production'
 ;(async () => {
   // Launch the browser.
   const app = await carlo.launch({
-    width: 600,
-    height: 400,
-    args: process.env.DEV === 'true' ? ['--auto-open-devtools-for-tabs'] : []
+    width: 800,
+    height: 600,
+    args: isDevelopment ? ['--auto-open-devtools-for-tabs'] : []
   })
 
   // Terminate Node.js process on app window closing.
