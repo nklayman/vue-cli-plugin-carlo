@@ -105,7 +105,7 @@ module.exports = (api, options) => {
     async args => {
       const execa = require('execa')
 
-      const server = await api.service.run('serve')
+      const { url } = await api.service.run('serve')
       const bundle = bundleMain({
         mode: 'serve',
         api,
@@ -115,7 +115,7 @@ module.exports = (api, options) => {
         mainProcessFile,
         mainProcessChain,
         usesTypescript,
-        server
+        url
       })
       logWithSpinner('Bundling main process...')
       bundle.run((err, stats) => {
@@ -147,7 +147,7 @@ function bundleMain ({
   mainProcessFile,
   mainProcessChain,
   usesTypescript,
-  server
+  url
 }) {
   const mainProcessTypeChecking = pluginOptions.mainProcessTypeChecking || false
   const isBuild = mode === 'build'
@@ -176,9 +176,13 @@ function bundleMain ({
         __static: JSON.stringify(api.resolve('./public'))
       }
     ])
+    if (/\/$/.test(url)) {
+      // Remove trailing '/'
+      url = url.substring(0, url.length - 1)
+    }
     const envVars = {
       // Dev server url
-      WEBPACK_DEV_SERVER_URL: server.url,
+      WEBPACK_DEV_SERVER_URL: url,
       // Path to node_modules (for externals in development)
       NODE_MODULES_PATH: api.resolve('./node_modules')
     }
