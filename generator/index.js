@@ -22,6 +22,10 @@ module.exports = api => {
     },
     dependencies: {
       carlo: '^0.9.20'
+    },
+    bin: 'index.js',
+    pkg: {
+      assets: '**'
     }
   })
 }

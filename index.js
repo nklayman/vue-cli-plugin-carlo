@@ -43,7 +43,17 @@ module.exports = (api, options) => {
         `See https://www.npmjs.com/package/pkg for cli options\n` +
         `See https://github.com/nklayman/vue-cli-plugin-carlo for more details about this plugin.`
     },
-    async args => {
+    async (args, rawArgs) => {
+      const { exec: pkg } = require('pkg')
+
+      // Prevent custom args from interfering with electron-builder
+      const removeArg = (arg, count = 1) => {
+        const index = rawArgs.indexOf(arg)
+        if (index !== -1) rawArgs.splice(index, count)
+      }
+      removeArg('--mode', 2)
+      removeArg('--dashboard')
+      removeArg('--legacy')
       // Arguments to be passed to renderer build
       const vueArgs = {
         _: [],
@@ -73,7 +83,7 @@ module.exports = (api, options) => {
         usesTypescript
       })
       logWithSpinner('Bundling main process...')
-      bundle.run((err, stats) => {
+      bundle.run(async (err, stats) => {
         stopSpinner(false)
         if (err) {
           throw err
@@ -88,8 +98,22 @@ module.exports = (api, options) => {
         )
         log(formatStats(stats, targetDirShort, api))
 
-        // buildApp()
+        await buildApp()
       })
+
+      async function buildApp () {
+        await fs.copy(
+          api.resolve('./package.json'),
+          api.resolve(`${outputDir}/bundled/package.json`)
+        )
+        info('Building app as an executable with pkg')
+        pkg([
+          `${outputDir}/bundled/package.json`,
+          '--out-path',
+          outputDir,
+          ...rawArgs
+        ])
+      }
     }
   )
 
@@ -206,10 +230,7 @@ function bundleMain ({
       }
     ])
   }
-  config
-    // .entry(isBuild ? 'background' : 'index')
-    .entry('index')
-    .add(api.resolve(mainProcessFile))
+  config.entry('index').add(api.resolve(mainProcessFile))
   const {
     transformer,
     formatter
