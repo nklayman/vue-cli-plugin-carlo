@@ -62,8 +62,6 @@ module.exports = (api, options) => {
         api.resolve('./package.json'),
         `${outputDir}/bundled/package.json`
       )
-      // Prevent electron-builder from installing app deps
-      fs.ensureDirSync(`${outputDir}/bundled/node_modules`)
       const bundle = bundleMain({
         mode: 'build',
         api,
@@ -130,8 +128,11 @@ module.exports = (api, options) => {
         log(formatStats(stats, targetDirShort, api))
 
         info('Launching Carlo...')
-        execa('node', [`${outputDir}/index.js`], {
+        const child = execa('node', [`${outputDir}/index.js`], {
           stdio: 'inherit'
+        })
+        child.on('exit', () => {
+          process.exit(0)
         })
       })
     }
