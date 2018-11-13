@@ -127,7 +127,10 @@ module.exports = (api, options) => {
     async args => {
       const execa = require('execa')
 
-      const { url } = await api.service.run('serve')
+      const { url } = await api.service.run('serve', {
+        https: true,
+        host: 'localhost'
+      })
       const bundle = bundleMain({
         mode: 'serve',
         api,

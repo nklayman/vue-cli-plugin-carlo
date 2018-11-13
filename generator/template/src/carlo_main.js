@@ -5,7 +5,9 @@ const isDevelopment = process.env.NODE_ENV !== 'production'
   const app = await carlo.launch({
     width: 800,
     height: 600,
-    args: isDevelopment ? ['--auto-open-devtools-for-tabs'] : []
+    args: isDevelopment
+      ? ['--auto-open-devtools-for-tabs', '--allow-insecure-localhost']
+      : []
   })
 
   // Terminate Node.js process on app window closing.
