@@ -45,6 +45,7 @@ module.exports = (api, options) => {
     },
     async (args, rawArgs) => {
       const { exec: pkg } = require('pkg')
+      const bundleOutputDir = path.join(outputDir, '/bundled')
 
       // Prevent custom args from interfering with electron-builder
       const removeArg = (arg, count = 1) => {
@@ -60,15 +61,33 @@ module.exports = (api, options) => {
         // For the cli-ui webpack dashboard
         dashboard: args.dashboard,
         // Make sure files are outputted to proper directory
-        dest: outputDir + '/bundled',
+        dest: bundleOutputDir,
         // Enable modern mode unless --legacy is passed
         modern: !args.legacy
       }
+      // With @vue/cli-service v3.4.1+, we can bypass legacy build
+      process.env.VUE_CLI_MODERN_BUILD = !args.legacy
+      // If the legacy builded is skipped the output dir won't be cleaned
+      await fs.removeSync(bundleOutputDir)
+      await fs.ensureDirSync(bundleOutputDir)
+      // Mock data from legacy build
+      const pages = options.pages || { index: '' }
+      Object.keys(pages).forEach(page => {
+        if (pages[page].filename) {
+          // If page is configured as an object, use the filename (without .html)
+          page = pages[page].filename.replace(/\.html$/, '')
+        }
+        fs.writeFileSync(
+          path.join(bundleOutputDir, `legacy-assets-${page}.html.json`),
+          '[]'
+        )
+      })
+
       info('Bundling render process:')
       // Build the render process with the custom args
       await api.service.run('build', vueArgs)
       // Copy package.json to output dir
-      fs.copySync(
+      await fs.copySync(
         api.resolve('./package.json'),
         `${outputDir}/bundled/package.json`
       )
