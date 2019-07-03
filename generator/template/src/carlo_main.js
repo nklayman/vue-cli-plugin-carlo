@@ -6,7 +6,7 @@ const isDevelopment = process.env.NODE_ENV !== 'production'
     width: 800,
     height: 600,
     args: isDevelopment
-      ? ['--auto-open-devtools-for-tabs', '--allow-insecure-localhost']
+      ? ['--auto-open-devtools-for-tabs', '--ignore-certificate-errors']
       : []
   })
 
