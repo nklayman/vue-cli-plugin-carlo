@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "execa": "^1.0.0",
+    "friendly-errors-webpack-plugin": "^1.7.0",
     "fs-extra": "^7.0.1",
     "pkg": "^4.3.4",
     "terser-webpack-plugin": "^1.1.0",
